@@ -2,7 +2,7 @@
 // datos que ya vienen calculados por contabilidad.js.
 
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
-const MODELO = process.env.OLLAMA_MODEL || 'qwen3:4b';
+const MODELO = process.env.OLLAMA_MODEL || 'qwen3:4b-instruct-2507-q4_K_M';
 const TIMEOUT_MS = Number(process.env.OLLAMA_TIMEOUT || 20000);
 
 async function chat(prompt) {
