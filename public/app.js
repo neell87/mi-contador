@@ -65,6 +65,50 @@ async function cargarCategorias() {
 
 $('mov-tipo').addEventListener('change', cargarCategorias);
 
+// ---------------------------------------------------------------------------
+// Sugerencia de categoría (IA): solo aparece para gastos con descripción, y
+// nunca decide sola. El usuario confirma con "Aplicar" o la ignora.
+// ---------------------------------------------------------------------------
+
+function actualizarVisibilidadSugerir() {
+  const esGasto = $('mov-tipo').value === 'gasto';
+  const hayDescripcion = $('mov-desc').value.trim().length > 0;
+  $('btn-sugerir').hidden = !(esGasto && hayDescripcion);
+  if ($('btn-sugerir').hidden) $('sugerencia-texto').textContent = '';
+}
+
+$('mov-tipo').addEventListener('change', actualizarVisibilidadSugerir);
+$('mov-desc').addEventListener('input', actualizarVisibilidadSugerir);
+
+$('btn-sugerir').addEventListener('click', async () => {
+  const descripcion = $('mov-desc').value.trim();
+  const tipo = $('mov-tipo').value;
+  if (!descripcion || tipo !== 'gasto') return;
+
+  $('sugerencia-texto').textContent = 'Pensando…';
+  try {
+    const r = await fetch('/api/asistente/categorizar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ descripcion, tipo })
+    }).then(x => x.json());
+
+    if (r.sugerencia) {
+      const { id, nombre } = r.sugerencia;
+      $('sugerencia-texto').innerHTML =
+        `¿${nombre}? <button type="button" id="btn-aplicar-sugerencia" class="link">Aplicar</button>`;
+      $('btn-aplicar-sugerencia').addEventListener('click', () => {
+        $('mov-categoria').value = String(id);
+        $('sugerencia-texto').textContent = '';
+      });
+    } else {
+      $('sugerencia-texto').textContent = 'Sin sugerencia';
+    }
+  } catch {
+    $('sugerencia-texto').textContent = 'Sin sugerencia';
+  }
+});
+
 $('btn-guardar').addEventListener('click', async () => {
   const monto = Math.round(parseFloat($('mov-monto').value) * 100); // a centavos
   const cuenta_id = Number($('mov-cuenta').value);
@@ -83,6 +127,7 @@ $('btn-guardar').addEventListener('click', async () => {
     })
   });
   $('mov-monto').value = ''; $('mov-desc').value = '';
+  actualizarVisibilidadSugerir();
   cargarResumen(); cargarMovimientos(); cargarCuentas(); cargarBalance();
 });
 

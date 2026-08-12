@@ -20,6 +20,8 @@ li { display: flex; justify-content: space-between; padding: 10px 0; border-bott
 .card h3:first-of-type { margin-top: 0; }
 
 button.secundario { background: none; color: var(--verde); border: 1px solid #d7dad8; flex: 0 0 auto; }
+button.link { background: none; color: var(--verde); border: none; padding: 4px 0; font-size: 13px; text-decoration: underline; flex: 0 0 auto; }
+.fila-sugerir { display: flex; align-items: center; gap: 8px; margin: -4px 0 8px; font-size: 13px; color: var(--muted); min-height: 20px; }
 .mes-actual { flex: 1; text-align: center; align-self: center; font-weight: 500; }
 
 .fila-reporte { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
